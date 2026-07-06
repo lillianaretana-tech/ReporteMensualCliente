@@ -1,0 +1,1534 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SBM Reporte Mensual Oficial 4insite</title>
+  <style>
+    :root {
+      --ink: #092321;
+      --muted: #526261;
+      --line: #cddbd8;
+      --soft: #f4f8f7;
+      --brand: #006b5f;
+      --brand-dark: #00251f;
+      --accent: #1f7f72;
+      --danger: #b42318;
+      --page-w: 210mm;
+      --page-h: 297mm;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: #e9efed;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.35;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: 0 8px 24px rgba(0, 35, 31, 0.12);
+    }
+
+    button,
+    .file-button {
+      border: 1px solid #cbdad7;
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: var(--ink);
+      background: #eef5f3;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    button.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+    button.dark { background: #243746; color: #fff; border-color: #243746; }
+    button.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+    button.small { padding: 5px 8px; font-size: 11px; }
+    input[type="file"] { display: none; }
+
+    .workspace {
+      padding: 24px 0 56px;
+    }
+
+    .page {
+      position: relative;
+      width: var(--page-w);
+      min-height: var(--page-h);
+      margin: 0 auto 18px;
+      padding: 18mm 16mm 20mm;
+      background: #fff;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+      overflow: visible;
+      break-after: page;
+      page-break-after: always;
+    }
+
+    .cover,
+    .closing-page {
+      overflow: hidden;
+    }
+
+    .page:last-child { margin-bottom: 0; }
+
+    .doc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 14px;
+      padding-bottom: 7mm;
+      border-bottom: 1px solid var(--line);
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #5c6c6a;
+      font-weight: 700;
+    }
+
+    .doc-header .right { text-align: right; }
+
+    .cover .doc-header {
+      display: block;
+    }
+
+    .cover-header-photo {
+      width: 100%;
+      margin-bottom: 7mm;
+    }
+
+    .cover-header-photo .file-button {
+      display: block;
+      width: 100%;
+      margin-bottom: 4px;
+      padding: 5px 6px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.1;
+    }
+
+    .cover-header-photo .chart-zone {
+      min-height: 34mm;
+      border-style: solid;
+    }
+
+    .cover-kicker {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .doc-footer {
+      position: absolute;
+      left: 16mm;
+      right: 16mm;
+      bottom: 9mm;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 5mm;
+      border-top: 1px solid var(--line);
+      color: #5d6c6a;
+      font-size: 8px;
+    }
+
+    .carbon-footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 10mm 16mm;
+      background: #e9f7f2;
+      color: var(--brand-dark);
+      text-align: center;
+      font-weight: 700;
+      border-top: 4px solid var(--brand);
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .carbon-pill {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 9px 18px;
+      border-radius: 6px;
+      color: var(--brand-dark);
+      background: #d7f0e6;
+      border: 2px solid var(--brand);
+      font-size: 12px;
+      font-weight: 700;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    .closing-page {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-left: 0;
+      padding-right: 0;
+      padding-bottom: 0;
+    }
+
+    .closing-spacer {
+      flex: 1;
+    }
+
+    h1, h2, h3 {
+      margin: 0;
+      line-height: 1.08;
+    }
+
+    h1 { font-size: 42px; letter-spacing: 0; }
+    h2 { font-size: 28px; margin: 10mm 0 7mm; }
+    h3 { font-size: 16px; margin-bottom: 10px; }
+
+    .cover {
+      display: flex;
+      flex-direction: column;
+      padding-top: 16mm;
+      padding-bottom: 18mm;
+    }
+
+    .cover-title {
+      margin-top: 20mm;
+      padding-bottom: 10mm;
+    }
+
+    .client-name {
+      margin-top: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      color: #243746;
+    }
+
+    .period {
+      display: inline-block;
+      min-width: 76%;
+      margin-top: 18px;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--brand);
+      color: var(--brand);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-top: 6mm;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .metric {
+      min-height: 28mm;
+      padding: 8px 7px;
+      text-align: center;
+      border-right: 1px solid var(--line);
+    }
+
+    .metric:last-child { border-right: 0; }
+    .metric .label {
+      min-height: 26px;
+      color: #24423f;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .metric .value {
+      display: block;
+      margin: 8px 0;
+      font-size: 30px;
+      font-weight: 800;
+      color: #000;
+    }
+    .metric .note {
+      display: block;
+      color: var(--muted);
+      font-size: 9px;
+    }
+
+    .intro-line {
+      margin-bottom: 8mm;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .official-list {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .official-list li {
+      position: relative;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: start;
+      min-height: 24px;
+      padding: 6px 0 6px 26px;
+      border-bottom: 1px solid #eef3f1;
+      font-size: 14px;
+    }
+
+    .official-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      color: var(--brand);
+      font-weight: 800;
+    }
+
+    .official-list .task-text {
+      min-height: 20px;
+      display: block;
+    }
+
+    .official-list .delete-inline {
+      align-self: center;
+      padding: 4px 7px;
+      font-size: 10px;
+    }
+
+    .section-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .box {
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 14px;
+      background: #fff;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .box + .box { margin-top: 12px; }
+    .box-title {
+      margin-bottom: 8px;
+      color: #0c2d2a;
+      font-weight: 800;
+    }
+
+    .chart-zone,
+    .photo-zone {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      background: var(--soft);
+      border: 1px dashed #b7cbc7;
+      color: #6a7b78;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .chart-zone {
+      min-height: 62mm;
+    }
+
+    .chart-zone.compact {
+      min-height: 34mm;
+    }
+
+    .detail-table .chart-zone.compact {
+      width: 48mm;
+      min-height: 28mm;
+      max-height: 36mm;
+    }
+
+    .photo-zone {
+      height: 62mm;
+    }
+
+    .chart-zone img,
+    .photo-zone img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+      background: #fff;
+    }
+
+    .upload-hint {
+      padding: 16px;
+      font-size: 12px;
+    }
+
+    .detail-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    .detail-table th,
+    .detail-table td {
+      vertical-align: top;
+      padding: 6px 8px;
+      border-bottom: 1px solid #e3eeeb;
+      text-align: left;
+    }
+
+    .detail-table tr {
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .detail-table th {
+      color: #2f504d;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .training-table td:first-child,
+    .training-table th:first-child {
+      width: 14mm;
+      text-align: center;
+    }
+
+    .training-table .delete-inline {
+      white-space: nowrap;
+    }
+
+    .training-box,
+    .training-table {
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    [data-page-type="training"] h2 {
+      margin-bottom: 5mm;
+      font-size: 26px;
+    }
+
+    [data-page-type="training"] .intro-line {
+      margin-bottom: 5mm;
+    }
+
+    .training-box {
+      padding: 10px 14px;
+    }
+
+    .training-table {
+      font-size: 12px;
+    }
+
+    .training-table thead {
+      display: table-header-group;
+    }
+
+    .training-table tbody {
+      display: table-row-group;
+    }
+
+    .training-print-page {
+      display: none;
+    }
+
+    .training-continuation-title {
+      margin: 0 0 5mm;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .quality-chart {
+      max-width: 156mm;
+      margin: 0 auto;
+      min-height: 46mm;
+      max-height: 78mm;
+    }
+
+    .quality-chart.compact {
+      max-width: 150mm;
+      min-height: 38mm;
+      max-height: 66mm;
+    }
+
+    .quality-chart img {
+      width: 100%;
+      height: auto;
+      max-height: inherit;
+      object-fit: contain;
+    }
+
+    .detail-table.detail-section-empty {
+      display: table;
+    }
+
+    .box.detail-section-empty,
+    .intro-line.detail-section-empty {
+      display: block;
+    }
+
+    .photo-report {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      break-inside: auto;
+      page-break-inside: auto;
+    }
+
+    .work-card {
+      grid-column: span 2;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e4eeeb;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .work-title {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .photo-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .photo-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 26px;
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-top: 0;
+      color: #2c4845;
+      font-size: 12px;
+      background: #fff;
+    }
+
+    .small-note {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    [contenteditable="true"] {
+      outline: none;
+      min-height: 1.2em;
+      border-radius: 3px;
+    }
+
+    [contenteditable="true"]:focus {
+      box-shadow: 0 0 0 2px rgba(0, 107, 95, 0.2);
+      background: #f3faf8;
+    }
+
+    [data-placeholder]:empty::before {
+      content: attr(data-placeholder);
+      color: #7b8a88;
+    }
+
+    .delete-inline {
+      color: var(--danger);
+      background: #fff1f0;
+      border-color: #ffd3cf;
+    }
+
+    @media print {
+      @page { size: A4; margin: 16mm 16mm 18mm; }
+      body { background: #fff; }
+      .toolbar, .print-hidden { display: none !important; }
+      .workspace { padding: 0; }
+      .page {
+        width: auto;
+        min-height: auto;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+        overflow: visible;
+      }
+      .cover,
+      .closing-page {
+        overflow: hidden;
+        min-height: 263mm;
+      }
+      .doc-footer {
+        position: static;
+        margin-top: 10mm;
+      }
+      .carbon-footer {
+        position: static;
+        margin-top: auto;
+      }
+      .page:last-child {
+        break-after: auto;
+        page-break-after: auto;
+      }
+      .page.last-before-closing {
+        break-after: auto;
+        page-break-after: auto;
+      }
+      .closing-page {
+        min-height: auto;
+        break-before: avoid;
+        page-break-before: avoid;
+      }
+      .closing-spacer {
+        display: none;
+      }
+      .carbon-footer {
+        margin-top: 10mm;
+      }
+      .box,
+      .work-card,
+      .photo-pair,
+      .chart-zone,
+      .photo-zone {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .training-box,
+      .training-table {
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+      }
+      .training-table th,
+      .training-table td {
+        padding-top: 2px;
+        padding-bottom: 2px;
+      }
+      body.training-print-mode [data-page-type="training"] {
+        display: none;
+      }
+      body.training-print-mode .training-print-page {
+        display: block;
+      }
+      [data-placeholder]:empty::before { content: ""; }
+      [contenteditable="true"]:focus { box-shadow: none; background: transparent; }
+      .chart-zone, .photo-zone { border-style: solid; }
+      .detail-section-empty { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar print-hidden">
+    <button class="primary" onclick="window.print()">Exportar PDF</button>
+    <button class="dark" onclick="saveDraft()">Guardar borrador</button>
+    <button onclick="loadDraft()">Recuperar borrador</button>
+    <button onclick="compactPhotoPages()">Reordenar fotos</button>
+    <button onclick="addPhotoPage()">Nueva página fotográfica</button>
+    <button class="danger" onclick="clearDraft()">Borrar borrador</button>
+    <span class="small-note" id="scriptStatus">Cargando botones...</span>
+    <span class="small-note">Machote oficial: métricas 4insite, gráficos y detalles. Los ejemplos vacíos no salen en PDF.</span>
+  </div>
+
+  <main class="workspace" id="report">
+    <section class="page cover" data-page-type="cover">
+      <div class="doc-header">
+        <div class="cover-header-photo">
+          <label class="file-button print-hidden">Subir fotografía de portada<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.cover-header-photo').querySelector('.chart-zone'))"></label>
+          <div class="chart-zone" data-placeholder="Fotografía de portada"></div>
+        </div>
+        <div class="cover-kicker">
+          <div>SBM Confidential</div>
+          <div>Monthly Operations Report</div>
+        </div>
+      </div>
+
+      <div class="cover-title">
+        <h1 contenteditable="true" data-placeholder="SBM Monthly Report">SBM Monthly Report</h1>
+        <div class="client-name" contenteditable="true" data-placeholder="Cliente / proyecto">JLL-LSEG</div>
+        <div class="period" contenteditable="true" data-placeholder="DEL 01 AL 31 DE MES DEL 2026">DEL 01 AL 31 DE JULIO DEL 2026</div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="label">Safety</div>
+          <span class="value" contenteditable="true" data-placeholder="0">2012</span>
+          <span class="note">Días sin accidentes registrables</span>
+        </div>
+        <div class="metric">
+          <div class="label">Auditorías</div>
+          <span class="value" contenteditable="true" data-placeholder="0">4.85</span>
+          <span class="note">Puntuación promedio auditorías internas</span>
+        </div>
+        <div class="metric">
+          <div class="label">Quejas</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Quejas recibidas durante el mes</span>
+        </div>
+        <div class="metric">
+          <div class="label">Felicitaciones</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Felicitaciones recibidas durante el mes</span>
+        </div>
+        <div class="metric">
+          <div class="label">Satisfacción del cliente</div>
+          <span class="value" contenteditable="true" data-placeholder="0">5</span>
+          <span class="note">Puntuación promedio encuesta al cliente</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-page-type="summary">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Resumen mensual</h2>
+      <p class="intro-line" contenteditable="true" data-placeholder="Detalle de algunas tareas realizadas en el site durante el mes.">Detalle de algunas tareas realizadas en el site durante el mes.</p>
+      <ul class="official-list" id="taskList">
+        <li><span class="task-text" contenteditable="true" data-placeholder="Ejemplo: Se realizó limpieza del cuarto de IT y eléctrico.">Se realizó limpieza del cuarto de IT y eléctrico.</span><button class="small delete-inline print-hidden" onclick="removeListItem(this)">Eliminar</button></li>
+        <li><span class="task-text" contenteditable="true" data-placeholder="Ejemplo: Se dio control de polvo a equipo y mobiliario.">Se dio control de polvo a equipo y mobiliario en cuartos IT y eléctrico.</span><button class="small delete-inline print-hidden" onclick="removeListItem(this)">Eliminar</button></li>
+        <li><span class="task-text" contenteditable="true" data-placeholder="Ejemplo: Se realizó lavado de sillas.">Se realizó limpieza y lavado de sillas.</span><button class="small delete-inline print-hidden" onclick="removeListItem(this)">Eliminar</button></li>
+      </ul>
+      <div class="section-actions print-hidden">
+        <button onclick="addListItem('taskList','')">Agregar tarea</button>
+        <button onclick="pasteList('taskList')">Pegar/importar lista</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 2</span></div>
+    </section>
+
+    <section class="page" data-page-type="training">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Capacitaciones del período</h2>
+      <p class="intro-line" contenteditable="true" data-placeholder="Detalle de las capacitaciones impartidas durante el período.">Detalle de las capacitaciones impartidas durante el período.</p>
+      <div class="box training-box">
+        <table class="detail-table training-table" id="trainingTable">
+          <thead>
+            <tr><th>#</th><th>Nombre de la capacitación</th><th class="print-hidden">Acción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td contenteditable="true" data-placeholder="Nombre de la capacitación."></td><td class="print-hidden"><button class="small delete-inline" onclick="removeTrainingRow(this)">Eliminar</button></td></tr>
+          </tbody>
+        </table>
+        <div class="section-actions print-hidden">
+          <button onclick="addTrainingRow('')">Agregar capacitación</button>
+          <button onclick="importTrainings()">Importar de Excel</button>
+        </div>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 3</span></div>
+    </section>
+
+    <section class="page" data-page-type="quality">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Métricas de calidad</h2>
+      <div class="two-col">
+        <div class="box">
+          <h3>Auditorías</h3>
+          <p contenteditable="true" data-placeholder="SBM realizó un total de 0 auditorías internas y 0 auditorías en conjunto durante el mes.">SBM realizó un total de 1 auditoría interna y 0 auditorías en conjunto durante el mes.</p>
+          <table class="detail-table">
+            <tr><th>Indicador</th><th>Resultado</th></tr>
+            <tr><td>Promedio auditoría interna</td><td contenteditable="true" data-placeholder="0">5</td></tr>
+            <tr><td>Promedio auditoría en conjunto</td><td contenteditable="true" data-placeholder="0">4.85</td></tr>
+          </table>
+        </div>
+        <div class="box">
+          <h3>Gráfico 4insite - Auditorías</h3>
+          <label class="file-button print-hidden">Subir gráfico<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+          <div class="chart-zone compact quality-chart" data-placeholder="Subir captura o gráfico de auditorías de 4insite"></div>
+        </div>
+      </div>
+      <div class="box" style="margin-top:14px">
+        <h3>Felicitaciones</h3>
+        <p contenteditable="true" data-placeholder="SBM recibió 0 felicitaciones durante el mes.">SBM recibió 2 felicitaciones durante el mes.</p>
+        <label class="file-button print-hidden">Subir gráfico 4insite<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+        <div class="chart-zone compact quality-chart" data-placeholder="Gráfico de felicitaciones"></div>
+        <table class="detail-table" id="kudosTable">
+          <tr><th>#</th><th>Detalle</th><th class="print-hidden">Acción</th></tr>
+          <tr><td>1</td><td contenteditable="true" data-placeholder="Detalle de felicitación recibida.">Se recibe felicitación vía WhatsApp por soporte en actividad del cliente.</td><td class="print-hidden"><button class="small delete-inline" onclick="removeRow(this)">Eliminar</button></td></tr>
+        </table>
+        <div class="section-actions print-hidden">
+          <button onclick="addDetailRow('kudosTable','Detalle de felicitación recibida.')">Agregar felicitación</button>
+        </div>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 3</span></div>
+    </section>
+
+    <section class="page" data-page-type="complaints">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Quejas</h2>
+      <div class="box">
+        <h3>Quejas</h3>
+        <p contenteditable="true" data-placeholder="SBM recibió un total de 0 quejas durante el mes.">SBM recibió un total de 0 quejas durante el mes.</p>
+        <label class="file-button print-hidden">Subir gráfico 4insite<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+        <div class="chart-zone quality-chart" data-placeholder="Gráfico de quejas"></div>
+      </div>
+      <div class="box" style="margin-top:14px">
+        <h3>Detalle de quejas</h3>
+        <table class="detail-table" id="complaintsTable">
+          <tr><th>#</th><th>Detalle</th><th class="print-hidden">Acción</th></tr>
+          <tr><td>1</td><td contenteditable="true" data-placeholder="Si no hubo quejas, dejar vacío."></td><td class="print-hidden"><button class="small delete-inline" onclick="removeRow(this)">Eliminar</button></td></tr>
+        </table>
+        <div class="section-actions print-hidden">
+          <button onclick="addDetailRow('complaintsTable','Detalle de la queja recibida.')">Agregar queja</button>
+        </div>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 4</span></div>
+    </section>
+
+    <section class="page" data-page-type="goodcatch-detail">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Good Catch</h2>
+      <div class="box">
+        <h3>Good Catch</h3>
+        <p contenteditable="true" data-placeholder="SBM recibió un total de 0 reportes de posibles peligros durante el mes.">SBM recibió un total de 4 reportes de posibles peligros durante el mes.</p>
+        <label class="file-button print-hidden">Subir gráfico 4insite<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+        <div class="chart-zone compact quality-chart" data-placeholder="Gráfico de Good Catch"></div>
+      </div>
+      <p class="intro-line">Detalle de los reportes de posibles peligros registrados durante el mes.</p>
+      <table class="detail-table" id="goodCatchTable">
+        <tr><th>#</th><th>Detalle</th><th>Evidencia</th><th class="print-hidden">Acción</th></tr>
+        <tr>
+          <td>1</td>
+          <td contenteditable="true" data-placeholder="Detalle del posible peligro encontrado.">Se encuentra taza en el baño de hombres, causando contaminación cruzada.</td>
+          <td>
+            <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('td').querySelector('.chart-zone'))"></label>
+            <div class="chart-zone compact" data-placeholder="Foto opcional"></div>
+          </td>
+          <td class="print-hidden"><button class="small delete-inline" onclick="removeRow(this)">Eliminar</button></td>
+        </tr>
+      </table>
+      <div class="section-actions print-hidden">
+        <button onclick="addGoodCatchRow()">Agregar Good Catch</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 5</span></div>
+    </section>
+
+    <section class="page photo-page" data-page-type="photos">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Reporte fotográfico de limpieza</h2>
+      <div class="photo-report" id="photoReport">
+        <article class="work-card">
+          <p class="work-title" contenteditable="true" data-placeholder="Descripción de tarea realizada.">Se realizó limpieza del cuarto de IT y eléctrico.</p>
+          <div class="photo-pair">
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Proceso / Antes"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Proceso">Proceso</div>
+            </div>
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Después"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Después">Después</div>
+            </div>
+          </div>
+          <div class="section-actions print-hidden">
+            <button class="small" onclick="addTaskFromCard(this)">Subir al resumen</button>
+            <button class="small delete-inline" onclick="removeWorkCard(this)">Eliminar evidencia</button>
+          </div>
+        </article>
+        <article class="work-card">
+          <p class="work-title" contenteditable="true" data-placeholder="Descripción de tarea realizada.">Se dio control de polvo a equipo y mobiliario en cuartos IT y eléctrico.</p>
+          <div class="photo-pair">
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Antes"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Antes">Antes</div>
+            </div>
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Después"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Después">Después</div>
+            </div>
+          </div>
+          <div class="section-actions print-hidden">
+            <button class="small" onclick="addTaskFromCard(this)">Subir al resumen</button>
+            <button class="small delete-inline" onclick="removeWorkCard(this)">Eliminar evidencia</button>
+          </div>
+        </article>
+      </div>
+      <div class="section-actions print-hidden">
+        <button onclick="addWorkCard(document.getElementById('photoReport'))">Agregar evidencia</button>
+        <button onclick="addAllPhotoTasksToSummary()">Subir todas al resumen</button>
+        <button onclick="addPhotoPage()">Nueva página fotográfica</button>
+        <button onclick="compactPhotoPages()">Reordenar fotos</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 6</span></div>
+    </section>
+
+    <section class="page" data-page-type="maintenance">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Reporte fotográfico de mantenimiento</h2>
+      <div class="photo-report" id="maintenanceReport">
+        <article class="work-card">
+          <p class="work-title" contenteditable="true" data-placeholder="Descripción de mantenimiento realizado.">Se reparó silla de cubículo.</p>
+          <div class="photo-pair">
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Antes / Proceso"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Antes">Antes</div>
+            </div>
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Después"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Después">Después</div>
+            </div>
+          </div>
+          <div class="section-actions print-hidden">
+            <button class="small delete-inline" onclick="removeWorkCard(this)">Eliminar evidencia</button>
+          </div>
+        </article>
+      </div>
+      <div class="section-actions print-hidden">
+        <button onclick="addWorkCard(document.getElementById('maintenanceReport'))">Agregar evidencia</button>
+        <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 7</span></div>
+    </section>
+
+    <section class="page" data-page-type="events">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente">MES / CLIENTE</div></div>
+      <h2>Team building / eventos</h2>
+      <p class="intro-line" contenteditable="true" data-placeholder="Detalle de actividades, eventos o team building realizados durante el mes.">Detalle de actividades, eventos o team building realizados durante el mes.</p>
+      <div class="photo-report" id="eventsReport">
+        <article class="work-card">
+          <p class="work-title" contenteditable="true" data-placeholder="Descripción del evento o actividad.">Actividad de integración con el equipo.</p>
+          <div class="photo-pair">
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Foto del evento"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Evidencia">Evidencia</div>
+            </div>
+            <div>
+              <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('div').querySelector('.photo-zone'))"></label>
+              <div class="photo-zone" data-placeholder="Foto adicional"></div>
+              <div class="photo-label" contenteditable="true" data-placeholder="Evidencia">Evidencia</div>
+            </div>
+          </div>
+          <div class="section-actions print-hidden">
+            <button class="small delete-inline" onclick="removeWorkCard(this)">Eliminar evidencia</button>
+          </div>
+        </article>
+      </div>
+      <div class="section-actions print-hidden">
+        <button onclick="addWorkCard(document.getElementById('eventsReport'))">Agregar evidencia</button>
+        <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 8</span></div>
+    </section>
+
+    <section class="page closing-page" data-page-type="closing">
+      <div class="closing-spacer"></div>
+      <div class="carbon-footer">
+        SBM Confidential
+        <div class="carbon-pill">SBM una empresa declarada Carbono Neutro en sus emisiones de Alcance 1 y 2</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const draftKey = 'sbm-oficial-4insite-v1';
+
+    function loadImage(event, target) {
+      const file = event.target.files && event.target.files[0];
+      if (!file || !target) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        target.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = reader.result;
+        target.appendChild(img);
+        saveDraft();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function addListItem(listId, text) {
+      const list = document.getElementById(listId);
+      const item = document.createElement('li');
+      const span = document.createElement('span');
+      const removeButton = document.createElement('button');
+      span.className = 'task-text';
+      span.contentEditable = 'true';
+      span.dataset.placeholder = 'Nueva tarea realizada.';
+      span.textContent = text || '';
+      removeButton.className = 'small delete-inline print-hidden';
+      removeButton.type = 'button';
+      removeButton.textContent = 'Eliminar';
+      removeButton.addEventListener('click', () => removeListItem(removeButton));
+      item.append(span, removeButton);
+      list.appendChild(item);
+      span.focus();
+      saveDraft();
+    }
+
+    function removeListItem(button) {
+      const item = button.closest('li');
+      if (!item) return;
+      item.remove();
+      saveDraft();
+    }
+
+    async function pasteList(listId) {
+      const raw = prompt('Pegue la lista. Puede venir de Excel, 4insite o Word; cada línea será un punto.');
+      if (!raw) return;
+      raw.split(/\r?\n/)
+        .map(line => line.replace(/^[\s\d.)✓+-]+/, '').trim())
+        .filter(Boolean)
+        .forEach(line => addListItem(listId, line));
+      saveDraft();
+    }
+
+    function addDetailRow(tableId, placeholder) {
+      const table = document.getElementById(tableId);
+      const count = table.querySelectorAll('tr').length;
+      const row = table.insertRow(-1);
+      const numberCell = row.insertCell();
+      const detailCell = row.insertCell();
+      const actionCell = row.insertCell();
+      const removeButton = document.createElement('button');
+      numberCell.textContent = count;
+      detailCell.contentEditable = 'true';
+      detailCell.dataset.placeholder = placeholder;
+      actionCell.className = 'print-hidden';
+      removeButton.className = 'small delete-inline';
+      removeButton.type = 'button';
+      removeButton.textContent = 'Eliminar';
+      removeButton.addEventListener('click', () => removeRow(removeButton));
+      actionCell.appendChild(removeButton);
+      detailCell.focus();
+      updateEmptyDetailTables();
+      saveDraft();
+    }
+
+    function addTrainingRow(text) {
+      const table = document.getElementById('trainingTable');
+      const body = table.querySelector('tbody') || table;
+      const count = body.querySelectorAll('tr').length + 1;
+      const row = body.insertRow(-1);
+      const numberCell = row.insertCell();
+      const nameCell = row.insertCell();
+      const actionCell = row.insertCell();
+      const removeButton = document.createElement('button');
+      numberCell.textContent = count;
+      nameCell.contentEditable = 'true';
+      nameCell.dataset.placeholder = 'Nombre de la capacitación.';
+      nameCell.textContent = text || '';
+      actionCell.className = 'print-hidden';
+      removeButton.className = 'small delete-inline';
+      removeButton.type = 'button';
+      removeButton.textContent = 'Eliminar';
+      removeButton.addEventListener('click', () => removeTrainingRow(removeButton));
+      actionCell.appendChild(removeButton);
+      table.classList.remove('detail-section-empty');
+      nameCell.focus();
+      saveDraft();
+    }
+
+    function removeTrainingRow(button) {
+      const row = button.closest('tr');
+      const table = row.closest('table');
+      row.remove();
+      renumberTable(table);
+      if (!table.querySelector('tbody tr')) addTrainingRow('');
+      updateEmptyDetailTables();
+      saveDraft();
+    }
+
+    function importTrainings() {
+      const raw = prompt('Pegue desde Excel la columna con los nombres de capacitación. Se importará una capacitación por línea.');
+      if (!raw) return;
+      const names = raw.split(/\r?\n/)
+        .map(line => line.split(/\t|,|;/)[0].trim())
+        .filter(Boolean);
+      if (!names.length) return;
+      const table = document.getElementById('trainingTable');
+      const emptyRows = Array.from(table.querySelectorAll('tbody tr'))
+        .filter(row => !row.cells[1].textContent.trim());
+      emptyRows.forEach(row => row.remove());
+      names.forEach(name => addTrainingRow(name));
+      renumberTable(table);
+      updateEmptyDetailTables();
+      saveDraft();
+    }
+
+    function addGoodCatchRow() {
+      const table = document.getElementById('goodCatchTable');
+      const count = table.querySelectorAll('tr').length;
+      const row = table.insertRow(-1);
+      const numberCell = row.insertCell();
+      const detailCell = row.insertCell();
+      const evidenceCell = row.insertCell();
+      const actionCell = row.insertCell();
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      const zone = document.createElement('div');
+      const removeButton = document.createElement('button');
+      numberCell.textContent = count;
+      detailCell.contentEditable = 'true';
+      detailCell.dataset.placeholder = 'Detalle del posible peligro encontrado.';
+      label.className = 'file-button print-hidden';
+      label.textContent = 'Subir foto';
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.addEventListener('change', event => loadImage(event, zone));
+      label.appendChild(input);
+      zone.className = 'chart-zone compact';
+      zone.dataset.placeholder = 'Foto opcional';
+      evidenceCell.append(label, zone);
+      actionCell.className = 'print-hidden';
+      removeButton.className = 'small delete-inline';
+      removeButton.type = 'button';
+      removeButton.textContent = 'Eliminar';
+      removeButton.addEventListener('click', () => removeRow(removeButton));
+      actionCell.appendChild(removeButton);
+      detailCell.focus();
+      updateEmptyDetailTables();
+      saveDraft();
+    }
+
+    function removeRow(button) {
+      const row = button.closest('tr');
+      const table = row.closest('table');
+      row.remove();
+      renumberTable(table);
+      updateEmptyDetailTables();
+      saveDraft();
+    }
+
+    function renumberTable(table) {
+      Array.from(table.querySelectorAll('tr')).slice(1).forEach((row, index) => {
+        row.cells[0].textContent = index + 1;
+      });
+    }
+
+    function tableHasDetails(table) {
+      return Array.from(table.querySelectorAll('tr')).slice(1).some(row => {
+        const detailCell = row.cells[1];
+        if (!detailCell) return false;
+        return detailCell.textContent.trim().length > 0;
+      });
+    }
+
+    function updateEmptyDetailTables() {
+      ['kudosTable', 'complaintsTable', 'goodCatchTable'].forEach(id => {
+        const table = document.getElementById(id);
+        if (!table) return;
+        const isEmpty = !tableHasDetails(table);
+        table.classList.toggle('detail-section-empty', isEmpty);
+        if (id === 'complaintsTable') {
+          const box = table.closest('.box');
+          if (box) box.classList.toggle('detail-section-empty', isEmpty);
+        }
+        if (id === 'goodCatchTable') {
+          const intro = table.previousElementSibling;
+          if (intro && intro.classList.contains('intro-line')) intro.classList.toggle('detail-section-empty', isEmpty);
+        }
+      });
+    }
+
+    function addWorkCard(container) {
+      const card = document.createElement('article');
+      card.className = 'work-card';
+      const title = document.createElement('p');
+      const pair = document.createElement('div');
+      const actions = document.createElement('div');
+      const summaryButton = document.createElement('button');
+      const removeButton = document.createElement('button');
+      title.className = 'work-title';
+      title.contentEditable = 'true';
+      title.dataset.placeholder = 'Descripción de tarea realizada.';
+      pair.className = 'photo-pair';
+      pair.appendChild(createPhotoSlot('Antes / Proceso', 'Antes'));
+      pair.appendChild(createPhotoSlot('Después', 'Después'));
+      actions.className = 'section-actions print-hidden';
+      summaryButton.className = 'small';
+      summaryButton.type = 'button';
+      summaryButton.textContent = 'Subir al resumen';
+      summaryButton.addEventListener('click', () => addTaskFromCard(summaryButton));
+      removeButton.className = 'small delete-inline';
+      removeButton.type = 'button';
+      removeButton.textContent = 'Eliminar evidencia';
+      removeButton.addEventListener('click', () => removeWorkCard(removeButton));
+      actions.append(summaryButton, removeButton);
+      card.append(title, pair, actions);
+      container.appendChild(card);
+      card.querySelector('.work-title').focus();
+      saveDraft();
+    }
+
+    function createPhotoSlot(zoneText, labelText) {
+      const wrapper = document.createElement('div');
+      const label = document.createElement('label');
+      const input = document.createElement('input');
+      const zone = document.createElement('div');
+      const caption = document.createElement('div');
+      label.className = 'file-button print-hidden';
+      label.textContent = 'Subir foto';
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.addEventListener('change', event => loadImage(event, zone));
+      label.appendChild(input);
+      zone.className = 'photo-zone';
+      zone.dataset.placeholder = zoneText;
+      caption.className = 'photo-label';
+      caption.contentEditable = 'true';
+      caption.dataset.placeholder = labelText;
+      caption.textContent = labelText;
+      wrapper.append(label, zone, caption);
+      return wrapper;
+    }
+
+    function addPhotoPage() {
+      const lastPhotoPage = Array.from(document.querySelectorAll('[data-page-type="photos"]')).pop();
+      const page = lastPhotoPage.cloneNode(true);
+      const report = page.querySelector('.photo-report');
+      report.id = 'photoReport' + Date.now();
+      report.innerHTML = '';
+      page.querySelector('h2').textContent = 'Reporte fotográfico de limpieza - Continuación';
+      lastPhotoPage.after(page);
+      addWorkCard(report);
+      updatePageNumbers();
+      saveDraft();
+    }
+
+    function removeWorkCard(button) {
+      const card = button.closest('.work-card');
+      const report = card.closest('.photo-report');
+      card.remove();
+      if (!report.querySelector('.work-card')) addWorkCard(report);
+      saveDraft();
+    }
+
+    function removeSection(button) {
+      if (!confirm('¿Eliminar esta sección del reporte?')) return;
+      button.closest('.page').remove();
+      updatePageNumbers();
+      saveDraft();
+    }
+
+    function addTaskFromCard(button) {
+      const card = button.closest('.work-card');
+      const text = card.querySelector('.work-title').textContent.trim();
+      if (!text) return;
+      if (!summaryTaskExists(text)) addListItem('taskList', text);
+    }
+
+    function summaryTaskExists(text) {
+      const normalized = text.trim().toLowerCase();
+      return Array.from(document.querySelectorAll('#taskList .task-text'))
+        .some(span => span.textContent.trim().toLowerCase() === normalized);
+    }
+
+    function addAllPhotoTasksToSummary() {
+      const titles = Array.from(document.querySelectorAll('.photo-report .work-title'))
+        .map(title => title.textContent.trim())
+        .filter(Boolean);
+      let added = 0;
+      titles.forEach(text => {
+        if (summaryTaskExists(text)) return;
+        addListItem('taskList', text);
+        added += 1;
+      });
+      saveDraft();
+      alert(added ? `Se agregaron ${added} actividades al resumen.` : 'No hay actividades nuevas para agregar al resumen.');
+    }
+
+    function compactPhotoPages() {
+      const photoPages = Array.from(document.querySelectorAll('[data-page-type="photos"]'));
+      if (!photoPages.length) return;
+      const cards = photoPages.flatMap(page => Array.from(page.querySelectorAll('.work-card')));
+      photoPages.slice(1).forEach(page => page.remove());
+      const firstReport = photoPages[0].querySelector('.photo-report');
+      firstReport.innerHTML = '';
+      let currentPage = photoPages[0];
+      let currentReport = firstReport;
+      let insertAfter = photoPages[0];
+      cards.forEach((card, index) => {
+        if (index > 0 && index % 2 === 0) {
+          currentPage = currentPage.cloneNode(true);
+          currentReport = currentPage.querySelector('.photo-report');
+          currentReport.id = 'photoReport' + Date.now() + index;
+          currentReport.innerHTML = '';
+          currentPage.querySelector('h2').textContent = 'Reporte fotográfico de limpieza - Continuación';
+          insertAfter.after(currentPage);
+          insertAfter = currentPage;
+        }
+        currentReport.appendChild(card);
+      });
+      updatePageNumbers();
+      saveDraft();
+    }
+
+    function updatePageNumbers() {
+      getNumberedPages().forEach((page, index) => {
+        const footer = page.querySelector('.doc-footer span:last-child');
+        if (footer) footer.textContent = 'Página ' + (index + 1);
+      });
+      markClosingPlacement();
+    }
+
+    function getNumberedPages() {
+      const pages = Array.from(document.querySelectorAll('.page'));
+      if (document.body.classList.contains('training-print-mode')) {
+        return pages.filter(page => page.dataset.pageType !== 'training');
+      }
+      return pages.filter(page => !page.classList.contains('training-print-page'));
+    }
+
+    function markClosingPlacement() {
+      document.querySelectorAll('.last-before-closing').forEach(page => page.classList.remove('last-before-closing'));
+      const closing = document.querySelector('.closing-page');
+      if (!closing) return;
+      const previous = closing.previousElementSibling;
+      if (previous && previous.classList.contains('page')) previous.classList.add('last-before-closing');
+    }
+
+    function prepareTrainingPrintPages() {
+      cleanupTrainingPrintPages();
+      const trainingPage = document.querySelector('[data-page-type="training"]');
+      const table = document.getElementById('trainingTable');
+      const body = table && table.querySelector('tbody');
+      if (!trainingPage || !table || !body) return;
+
+      const rows = Array.from(body.querySelectorAll('tr'))
+        .map(row => row.cells[1] ? row.cells[1].textContent.trim() : '')
+        .filter(Boolean);
+      const items = rows.length ? rows : [''];
+      const firstPageLimit = 29;
+      const continuationLimit = 38;
+      let cursor = 0;
+      let pageNumber = 0;
+      let insertAfter = trainingPage;
+
+      while (cursor < items.length) {
+        const limit = pageNumber === 0 ? firstPageLimit : continuationLimit;
+        const chunk = items.slice(cursor, cursor + limit);
+        const page = createTrainingPrintPage(trainingPage, chunk, cursor, pageNumber);
+        insertAfter.after(page);
+        insertAfter = page;
+        cursor += limit;
+        pageNumber += 1;
+      }
+
+      document.body.classList.add('training-print-mode');
+      updatePageNumbers();
+    }
+
+    function createTrainingPrintPage(sourcePage, items, offset, pageNumber) {
+      const page = document.createElement('section');
+      page.className = 'page training-print-page';
+      page.dataset.pageType = 'training-print';
+
+      const header = sourcePage.querySelector('.doc-header').cloneNode(true);
+      const box = document.createElement('div');
+      const table = document.createElement('table');
+      const thead = document.createElement('thead');
+      const tbody = document.createElement('tbody');
+      const footer = sourcePage.querySelector('.doc-footer').cloneNode(true);
+
+      box.className = 'box training-box';
+      table.className = 'detail-table training-table';
+      thead.innerHTML = '<tr><th>#</th><th>Nombre de la capacitación</th></tr>';
+      items.forEach((name, index) => {
+        const row = document.createElement('tr');
+        const numberCell = document.createElement('td');
+        const nameCell = document.createElement('td');
+        numberCell.textContent = offset + index + 1;
+        nameCell.textContent = name;
+        row.append(numberCell, nameCell);
+        tbody.appendChild(row);
+      });
+
+      table.append(thead, tbody);
+      box.appendChild(table);
+      page.appendChild(header);
+      if (pageNumber === 0) {
+        const title = sourcePage.querySelector('h2').cloneNode(true);
+        const intro = sourcePage.querySelector('.intro-line').cloneNode(true);
+        page.append(title, intro);
+      } else {
+        const continuation = document.createElement('div');
+        continuation.className = 'training-continuation-title';
+        continuation.textContent = 'Capacitaciones del período - continuación';
+        page.appendChild(continuation);
+      }
+      page.append(box, footer);
+      return page;
+    }
+
+    function cleanupTrainingPrintPages() {
+      document.querySelectorAll('.training-print-page').forEach(page => page.remove());
+      document.body.classList.remove('training-print-mode');
+      updatePageNumbers();
+    }
+
+    function normalizeReport() {
+      normalizeCoverHeader();
+      normalizeTaskList();
+      normalizeTrainingTable();
+      updateEmptyDetailTables();
+      markClosingPlacement();
+    }
+
+    function normalizeCoverHeader() {
+      const header = document.querySelector('.cover .doc-header');
+      if (!header) return;
+      const photo = header.querySelector('.cover-header-photo');
+      if (photo && header.firstElementChild !== photo) header.prepend(photo);
+      let kicker = header.querySelector('.cover-kicker');
+      if (!kicker) {
+        kicker = document.createElement('div');
+        kicker.className = 'cover-kicker';
+        kicker.innerHTML = '<div>SBM Confidential</div><div>Monthly Operations Report</div>';
+        header.appendChild(kicker);
+      }
+    }
+
+    function normalizeTaskList() {
+      document.querySelectorAll('#taskList li').forEach(item => {
+        let span = item.querySelector('.task-text');
+        if (!span) {
+          const text = item.textContent.replace(/Eliminar\s*$/i, '').trim();
+          item.textContent = '';
+          span = document.createElement('span');
+          span.className = 'task-text';
+          span.contentEditable = 'true';
+          span.dataset.placeholder = 'Nueva tarea realizada.';
+          span.textContent = text;
+          item.appendChild(span);
+        }
+        if (!item.querySelector('button')) {
+          const removeButton = document.createElement('button');
+          removeButton.className = 'small delete-inline print-hidden';
+          removeButton.type = 'button';
+          removeButton.textContent = 'Eliminar';
+          removeButton.addEventListener('click', () => removeListItem(removeButton));
+          item.appendChild(removeButton);
+        }
+      });
+    }
+
+    function normalizeTrainingTable() {
+      const table = document.getElementById('trainingTable');
+      if (!table) return;
+      let body = table.querySelector('tbody');
+      if (!body) {
+        body = document.createElement('tbody');
+        Array.from(table.querySelectorAll('tr')).slice(1).forEach(row => body.appendChild(row));
+        table.appendChild(body);
+      }
+      Array.from(body.querySelectorAll('tr')).forEach(row => {
+        const nameCell = row.cells[1];
+        if (nameCell) {
+          nameCell.contentEditable = 'true';
+          nameCell.dataset.placeholder = 'Nombre de la capacitación.';
+        }
+        const actionCell = row.cells[2] || row.insertCell();
+        actionCell.className = 'print-hidden';
+        if (!actionCell.querySelector('button')) {
+          const removeButton = document.createElement('button');
+          removeButton.className = 'small delete-inline';
+          removeButton.type = 'button';
+          removeButton.textContent = 'Eliminar';
+          removeButton.addEventListener('click', () => removeTrainingRow(removeButton));
+          actionCell.appendChild(removeButton);
+        }
+      });
+      if (!body.querySelector('tr')) addTrainingRow('');
+      renumberTable(table);
+    }
+
+    function saveDraft() {
+      try {
+        localStorage.setItem(draftKey, document.getElementById('report').innerHTML);
+      } catch (error) {
+        console.warn('No se pudo guardar el borrador local.', error);
+      }
+    }
+
+    function loadDraft() {
+      let saved = null;
+      try {
+        saved = localStorage.getItem(draftKey);
+      } catch (error) {
+        console.warn('No se pudo leer el borrador local.', error);
+      }
+      if (!saved) {
+        alert('No hay borrador guardado para este machote.');
+        return;
+      }
+      document.getElementById('report').innerHTML = saved;
+      normalizeReport();
+      updatePageNumbers();
+    }
+
+    function clearDraft() {
+      if (!confirm('¿Borrar el borrador guardado?')) return;
+      try {
+        localStorage.removeItem(draftKey);
+      } catch (error) {
+        console.warn('No se pudo borrar el borrador local.', error);
+      }
+      alert('Borrador eliminado.');
+    }
+
+    document.addEventListener('input', event => {
+      if (!event.target.closest('#report')) return;
+      updateEmptyDetailTables();
+      saveDraft();
+    });
+    window.addEventListener('beforeprint', () => {
+      updateEmptyDetailTables();
+      prepareTrainingPrintPages();
+      markClosingPlacement();
+    });
+    window.addEventListener('afterprint', cleanupTrainingPrintPages);
+    Object.assign(window, {
+      loadImage,
+      addListItem,
+      removeListItem,
+      pasteList,
+      addDetailRow,
+      addTrainingRow,
+      removeTrainingRow,
+      importTrainings,
+      addGoodCatchRow,
+      removeRow,
+      addWorkCard,
+      addPhotoPage,
+      removeWorkCard,
+      removeSection,
+      addTaskFromCard,
+      addAllPhotoTasksToSummary,
+      compactPhotoPages,
+      updateEmptyDetailTables,
+      markClosingPlacement,
+      prepareTrainingPrintPages,
+      cleanupTrainingPrintPages,
+      saveDraft,
+      loadDraft,
+      clearDraft
+    });
+    normalizeReport();
+    updatePageNumbers();
+    const scriptStatus = document.getElementById('scriptStatus');
+    if (scriptStatus) scriptStatus.textContent = 'Botones listos';
+  </script>
+</body>
+</html>
