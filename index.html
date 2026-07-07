@@ -890,12 +890,16 @@
             </div>
           </div>
           <div class="section-actions print-hidden">
+            <button class="small" onclick="addTaskFromCard(this)">Subir al resumen</button>
             <button class="small delete-inline" onclick="removeWorkCard(this)">Eliminar evidencia</button>
           </div>
         </article>
       </div>
       <div class="section-actions print-hidden">
         <button onclick="addWorkCard(document.getElementById('maintenanceReport'))">Agregar evidencia</button>
+        <button onclick="addAllPhotoTasksToSummary('maintenance')">Subir todas al resumen</button>
+        <button onclick="addPhotoPage('maintenance')">Nueva página fotográfica</button>
+        <button onclick="compactPhotoPages('maintenance')">Reordenar fotos</button>
         <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
       </div>
       <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 7</span></div>
@@ -1194,13 +1198,17 @@
       return wrapper;
     }
 
-    function addPhotoPage() {
-      const lastPhotoPage = Array.from(document.querySelectorAll('[data-page-type="photos"]')).pop();
+    function addPhotoPage(pageType = 'photos') {
+      const lastPhotoPage = Array.from(document.querySelectorAll(`[data-page-type="${pageType}"]`)).pop();
+      if (!lastPhotoPage) return;
       const page = lastPhotoPage.cloneNode(true);
       const report = page.querySelector('.photo-report');
-      report.id = 'photoReport' + Date.now();
+      report.id = (pageType === 'maintenance' ? 'maintenanceReport' : 'photoReport') + Date.now();
       report.innerHTML = '';
-      page.querySelector('h2').textContent = 'Reporte fotográfico de limpieza - Continuación';
+      const title = pageType === 'maintenance'
+        ? 'Reporte fotográfico de mantenimiento - Continuación'
+        : 'Reporte fotográfico de limpieza - Continuación';
+      page.querySelector('h2').textContent = title;
       lastPhotoPage.after(page);
       addWorkCard(report);
       updatePageNumbers();
@@ -1235,8 +1243,11 @@
         .some(span => span.textContent.trim().toLowerCase() === normalized);
     }
 
-    function addAllPhotoTasksToSummary() {
-      const titles = Array.from(document.querySelectorAll('.photo-report .work-title'))
+    function addAllPhotoTasksToSummary(pageType) {
+      const scope = pageType
+        ? `[data-page-type="${pageType}"] .photo-report .work-title`
+        : '.photo-report .work-title';
+      const titles = Array.from(document.querySelectorAll(scope))
         .map(title => title.textContent.trim())
         .filter(Boolean);
       let added = 0;
@@ -1249,8 +1260,8 @@
       alert(added ? `Se agregaron ${added} actividades al resumen.` : 'No hay actividades nuevas para agregar al resumen.');
     }
 
-    function compactPhotoPages() {
-      const photoPages = Array.from(document.querySelectorAll('[data-page-type="photos"]'));
+    function compactPhotoPages(pageType = 'photos') {
+      const photoPages = Array.from(document.querySelectorAll(`[data-page-type="${pageType}"]`));
       if (!photoPages.length) return;
       const cards = photoPages.flatMap(page => Array.from(page.querySelectorAll('.work-card')));
       photoPages.slice(1).forEach(page => page.remove());
@@ -1263,9 +1274,11 @@
         if (index > 0 && index % 2 === 0) {
           currentPage = currentPage.cloneNode(true);
           currentReport = currentPage.querySelector('.photo-report');
-          currentReport.id = 'photoReport' + Date.now() + index;
+          currentReport.id = (pageType === 'maintenance' ? 'maintenanceReport' : 'photoReport') + Date.now() + index;
           currentReport.innerHTML = '';
-          currentPage.querySelector('h2').textContent = 'Reporte fotográfico de limpieza - Continuación';
+          currentPage.querySelector('h2').textContent = pageType === 'maintenance'
+            ? 'Reporte fotográfico de mantenimiento - Continuación'
+            : 'Reporte fotográfico de limpieza - Continuación';
           insertAfter.after(currentPage);
           insertAfter = currentPage;
         }
