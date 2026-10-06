@@ -642,6 +642,29 @@
       .chart-zone, .photo-zone { border-style: solid; }
       .detail-section-empty { display: none !important; }
     }
+
+    #printReport { display: none; }
+    body.preparing-print #printReport { display: block; position: absolute; left: -10000px; top: 0; }
+    #printReport .print-sheet {
+      position: relative; width: 178mm; height: 262mm; min-height: 262mm;
+      padding: 0; margin: 0; box-shadow: none; background: white;
+      break-after: page; page-break-after: always;
+    }
+    #printReport .print-sheet:last-child { break-after: auto; page-break-after: auto; }
+    #printReport .print-content { display: flow-root; width: 100%; }
+    #printReport .doc-footer { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; }
+    #printReport .carbon-footer { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: 5mm 6mm; }
+    #printReport .carbon-pill { font-size: 10px; padding: 6px 10px; }
+    #printReport .print-last .doc-footer { bottom: 35mm; }
+    #printReport .print-hidden, #printReport .detail-section-empty { display: none !important; }
+    #printReport .photo-report { display: block; }
+    #printReport .work-card { margin-bottom: 12px; }
+    #printReport .work-card, #printReport li, #printReport tr { break-inside: avoid; page-break-inside: avoid; }
+    #printReport .training-table td, #printReport .training-table th { padding-top: 2px; padding-bottom: 2px; }
+    @media print {
+      body.print-ready #report { display: none !important; }
+      body.print-ready #printReport { display: block; position: static; }
+    }
   </style>
 </head>
 <body>
@@ -1552,6 +1575,112 @@
       return pages.filter(page => !page.classList.contains('training-print-page'));
     }
 
+    function cleanupReportPrint() {
+      document.getElementById('printReport')?.remove();
+      document.body.classList.remove('print-ready', 'preparing-print');
+    }
+
+    function prepareReportPrint() {
+      cleanupReportPrint();
+      updateEmptyDetailTables();
+      const root = document.createElement('main');
+      root.id = 'printReport';
+      document.body.appendChild(root);
+      document.body.classList.add('preparing-print');
+      const sources = Array.from(document.querySelectorAll('#report > .page:not(.closing-page):not(.training-print-page)'));
+      let sheet, content, wrappers, count, source;
+      const mm = 96 / 25.4;
+      const normalLimit = 244 * mm;
+      function newSheet() {
+        sheet = document.createElement('section');
+        sheet.className = 'print-sheet';
+        content = document.createElement('div');
+        content.className = 'print-content';
+        sheet.appendChild(content);
+        root.appendChild(sheet);
+        wrappers = new Map(); count = 0;
+        const header = source.querySelector('.doc-header');
+        if (header) content.appendChild(header.cloneNode(true));
+        const footer = source.querySelector('.doc-footer');
+        if (footer) sheet.appendChild(footer.cloneNode(true));
+      }
+      function shell(node) {
+        const copy = node.cloneNode(false);
+        copy.removeAttribute('id');
+        if (node.tagName === 'TABLE') {
+          const header = node.querySelector('thead');
+          if (header) copy.appendChild(header.cloneNode(true));
+          else {
+            const row = node.querySelector('tr');
+            if (row?.querySelector('th')) {
+              const head = document.createElement('thead');
+              head.appendChild(row.cloneNode(true)); copy.appendChild(head);
+            }
+          }
+        }
+        return copy;
+      }
+      function appendUnit(unit) {
+        let parent = content;
+        for (const ancestor of unit.path) {
+          if (!wrappers.has(ancestor)) {
+            const copy = shell(ancestor); parent.appendChild(copy); wrappers.set(ancestor, copy);
+          }
+          parent = wrappers.get(ancestor);
+        }
+        const copy = unit.node.cloneNode(true);
+        copy.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+        copy.removeAttribute('id');
+        parent.appendChild(copy); return copy;
+      }
+      function unitsFor(node, path = []) {
+        if (node.matches('.print-hidden, .doc-header, .doc-footer, .detail-section-empty')) return [];
+        if (node.tagName === 'THEAD' || (node.tagName === 'TR' && node.querySelector('th'))) return [];
+        const divisible = node.matches('.photo-report, .box, ul, ol, table, tbody');
+        if (divisible && node.children.length) return Array.from(node.children).flatMap(child => unitsFor(child, [...path, node]));
+        return [{ node, path }];
+      }
+      for (source of sources) {
+        const units = Array.from(source.children).flatMap(child => unitsFor(child));
+        newSheet();
+        units.forEach((unit, index) => {
+          let copy = appendUnit(unit);
+          // Keep a heading with enough space for the next content block.
+          const reserve = unit.node.matches('h2, h3') && index < units.length - 1 ? 20 * mm : 0;
+          if (content.getBoundingClientRect().height + reserve > (source === sources[sources.length - 1] ? 212 * mm : normalLimit) && count > 0) {
+            copy.remove();
+            // Remove now-empty wrapper shells at the end of the previous sheet.
+            for (const [original, wrapper] of Array.from(wrappers).reverse()) {
+              if (!wrapper.children.length || (original.tagName === 'TABLE' && !wrapper.querySelector('td'))) wrapper.remove();
+            }
+            newSheet(); copy = appendUnit(unit);
+          }
+          count += 1;
+        });
+      }
+      const carbon = document.querySelector('#report .carbon-footer');
+      if (carbon && sheet) {
+        // Reserve room for the last footer; move trailing blocks intact if needed.
+        const lastLimit = 212 * mm;
+        if (content.getBoundingClientRect().height > lastLimit) {
+          const last = content.lastElementChild;
+          if (last && !last.matches('.doc-header') && last.getBoundingClientRect().height < lastLimit - 25 * mm) {
+            last.remove(); newSheet(); content.appendChild(last);
+          } else {
+            newSheet();
+          }
+        }
+        sheet.classList.add('print-last');
+        sheet.appendChild(carbon.cloneNode(true));
+      }
+      Array.from(root.children).forEach((page, index) => {
+        const number = page.querySelector('.doc-footer span:last-child');
+        if (number) number.textContent = 'Página ' + (index + 1);
+      });
+      document.body.classList.remove('preparing-print');
+      document.body.classList.add('print-ready');
+    }
+
     function markClosingPlacement() {
       document.querySelectorAll('.last-before-closing').forEach(page => page.classList.remove('last-before-closing'));
       const closing = document.querySelector('.closing-page');
@@ -1868,6 +1997,8 @@
     function downloadBackup() {
       // Snapshot directly from the screen, even when browser storage is full.
       const copy = document.documentElement.cloneNode(true);
+      copy.querySelector('#printReport')?.remove();
+      copy.querySelector('body').classList.remove('print-ready', 'preparing-print');
       copy.querySelector('#report').removeAttribute('inert');
       copy.querySelector('#report').dataset.embeddedBackup = 'true';
       copy.querySelector('#saveStatus').textContent = 'Respaldo editable abierto';
@@ -1934,12 +2065,8 @@
       updateEmptyDetailTables();
       saveDraft();
     });
-    window.addEventListener('beforeprint', () => {
-      updateEmptyDetailTables();
-      prepareTrainingPrintPages();
-      markClosingPlacement();
-    });
-    window.addEventListener('afterprint', cleanupTrainingPrintPages);
+    window.addEventListener('beforeprint', prepareReportPrint);
+    window.addEventListener('afterprint', cleanupReportPrint);
     Object.assign(window, {
       loadImage,
       addListItem,
@@ -1962,6 +2089,8 @@
       compactPhotoPages,
       updateEmptyDetailTables,
       markClosingPlacement,
+      prepareReportPrint,
+      cleanupReportPrint,
       prepareTrainingPrintPages,
       cleanupTrainingPrintPages,
       saveDraft,
