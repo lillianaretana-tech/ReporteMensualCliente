@@ -521,6 +521,13 @@
       gap: 10px;
     }
 
+    .photo-pair.photo-individual {
+      grid-template-columns: 1fr;
+      max-width: 125mm;
+      margin: 0 auto;
+      width: 100%;
+    }
+
     .photo-label {
       display: flex;
       justify-content: space-between;
@@ -642,6 +649,8 @@
     <button class="primary" onclick="window.print()">Exportar PDF</button>
     <button class="dark" onclick="saveDraft()">Guardar borrador</button>
     <button onclick="loadDraft()">Recuperar borrador</button>
+    <button onclick="downloadBackup()">Descargar respaldo editable</button>
+    <span class="small-note" id="saveStatus" role="status" aria-live="polite">Recuperando borrador…</span>
     <button onclick="compactPhotoPages()">Reordenar fotos</button>
     <button onclick="addPhotoPage()">Nueva página fotográfica</button>
     <button class="danger" onclick="clearDraft()">Borrar borrador</button>
@@ -863,7 +872,8 @@
         </article>
       </div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(document.getElementById('photoReport'))">Agregar evidencia</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button onclick="addAllPhotoTasksToSummary()">Subir todas al resumen</button>
         <button onclick="addPhotoPage()">Nueva página fotográfica</button>
         <button onclick="compactPhotoPages()">Reordenar fotos</button>
@@ -896,7 +906,8 @@
         </article>
       </div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(document.getElementById('maintenanceReport'))">Agregar evidencia</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button onclick="addAllPhotoTasksToSummary('maintenance')">Subir todas al resumen</button>
         <button onclick="addPhotoPage('maintenance')">Nueva página fotográfica</button>
         <button onclick="compactPhotoPages('maintenance')">Reordenar fotos</button>
@@ -930,7 +941,8 @@
         </article>
       </div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(document.getElementById('eventsReport'))">Agregar evidencia</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
       </div>
       <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 8</span></div>
@@ -974,7 +986,7 @@
       removeButton.className = 'small delete-inline print-hidden';
       removeButton.type = 'button';
       removeButton.textContent = 'Eliminar';
-      removeButton.addEventListener('click', () => removeListItem(removeButton));
+      removeButton.setAttribute('onclick', 'removeListItem(this)');
       item.append(span, removeButton);
       list.appendChild(item);
       span.focus();
@@ -1013,7 +1025,7 @@
       removeButton.className = 'small delete-inline';
       removeButton.type = 'button';
       removeButton.textContent = 'Eliminar';
-      removeButton.addEventListener('click', () => removeRow(removeButton));
+      removeButton.setAttribute('onclick', 'removeRow(this)');
       actionCell.appendChild(removeButton);
       detailCell.focus();
       updateEmptyDetailTables();
@@ -1037,7 +1049,7 @@
       removeButton.className = 'small delete-inline';
       removeButton.type = 'button';
       removeButton.textContent = 'Eliminar';
-      removeButton.addEventListener('click', () => removeTrainingRow(removeButton));
+      removeButton.setAttribute('onclick', 'removeTrainingRow(this)');
       actionCell.appendChild(removeButton);
       table.classList.remove('detail-section-empty');
       nameCell.focus();
@@ -1090,7 +1102,7 @@
       label.textContent = 'Subir foto';
       input.type = 'file';
       input.accept = 'image/*';
-      input.addEventListener('change', event => loadImage(event, zone));
+      input.setAttribute('onchange', "loadImage(event,this.closest('td').querySelector('.chart-zone'))");
       label.appendChild(input);
       zone.className = 'chart-zone compact';
       zone.dataset.placeholder = 'Foto opcional';
@@ -1099,7 +1111,7 @@
       removeButton.className = 'small delete-inline';
       removeButton.type = 'button';
       removeButton.textContent = 'Eliminar';
-      removeButton.addEventListener('click', () => removeRow(removeButton));
+      removeButton.setAttribute('onclick', 'removeRow(this)');
       actionCell.appendChild(removeButton);
       detailCell.focus();
       updateEmptyDetailTables();
@@ -1146,7 +1158,7 @@
       });
     }
 
-    function addWorkCard(container) {
+    function addWorkCard(container, mode = 'pair') {
       const card = document.createElement('article');
       card.className = 'work-card';
       const title = document.createElement('p');
@@ -1158,17 +1170,22 @@
       title.contentEditable = 'true';
       title.dataset.placeholder = 'Descripción de tarea realizada.';
       pair.className = 'photo-pair';
-      pair.appendChild(createPhotoSlot('Antes / Proceso', 'Antes'));
-      pair.appendChild(createPhotoSlot('Después', 'Después'));
+      if (mode === 'individual') {
+        pair.classList.add('photo-individual');
+        pair.appendChild(createPhotoSlot('Fotografía del proceso', 'Proceso'));
+      } else {
+        pair.appendChild(createPhotoSlot('Antes / Proceso', 'Antes'));
+        pair.appendChild(createPhotoSlot('Después', 'Después'));
+      }
       actions.className = 'section-actions print-hidden';
       summaryButton.className = 'small';
       summaryButton.type = 'button';
       summaryButton.textContent = 'Subir al resumen';
-      summaryButton.addEventListener('click', () => addTaskFromCard(summaryButton));
+      summaryButton.setAttribute('onclick', 'addTaskFromCard(this)');
       removeButton.className = 'small delete-inline';
       removeButton.type = 'button';
       removeButton.textContent = 'Eliminar evidencia';
-      removeButton.addEventListener('click', () => removeWorkCard(removeButton));
+      removeButton.setAttribute('onclick', 'removeWorkCard(this)');
       actions.append(summaryButton, removeButton);
       card.append(title, pair, actions);
       container.appendChild(card);
@@ -1186,7 +1203,7 @@
       label.textContent = 'Subir foto';
       input.type = 'file';
       input.accept = 'image/*';
-      input.addEventListener('change', event => loadImage(event, zone));
+      input.setAttribute('onchange', "loadImage(event,this.closest('div').querySelector('.photo-zone'))");
       label.appendChild(input);
       zone.className = 'photo-zone';
       zone.dataset.placeholder = zoneText;
@@ -1392,6 +1409,30 @@
     }
 
     function normalizeReport() {
+      document.querySelectorAll('.work-card').forEach(card => {
+        card.querySelectorAll('input[type="file"]').forEach(input => input.setAttribute('onchange', "loadImage(event,this.closest('div').querySelector('.photo-zone'))"));
+        card.querySelectorAll('button').forEach(button => {
+          if (button.textContent.trim() === 'Subir al resumen') button.setAttribute('onclick', 'addTaskFromCard(this)');
+          if (button.textContent.trim() === 'Eliminar evidencia') button.setAttribute('onclick', 'removeWorkCard(this)');
+        });
+      });
+      document.querySelectorAll('.page .photo-report').forEach(report => {
+        const actions = report.nextElementSibling;
+        if (!actions || !actions.classList.contains('section-actions')) return;
+        const existing = Array.from(actions.querySelectorAll('button')).find(button => (button.getAttribute('onclick') || '').startsWith('addWorkCard('));
+        if (existing) {
+          existing.textContent = 'Agregar antes / después';
+          existing.setAttribute('onclick', "addWorkCard(this.closest('.page').querySelector('.photo-report'))");
+        }
+        if (!actions.querySelector('[data-add-individual]') && !actions.textContent.includes('Agregar foto individual')) {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.dataset.addIndividual = 'true';
+          button.textContent = 'Agregar foto individual / proceso';
+          button.setAttribute('onclick', "addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')");
+          if (existing) existing.after(button); else actions.prepend(button);
+        }
+      });
       normalizeCoverHeader();
       normalizeTaskList();
       normalizeTrainingTable();
@@ -1431,7 +1472,7 @@
           removeButton.className = 'small delete-inline print-hidden';
           removeButton.type = 'button';
           removeButton.textContent = 'Eliminar';
-          removeButton.addEventListener('click', () => removeListItem(removeButton));
+          removeButton.setAttribute('onclick', 'removeListItem(this)');
           item.appendChild(removeButton);
         }
       });
@@ -1459,7 +1500,7 @@
           removeButton.className = 'small delete-inline';
           removeButton.type = 'button';
           removeButton.textContent = 'Eliminar';
-          removeButton.addEventListener('click', () => removeTrainingRow(removeButton));
+          removeButton.setAttribute('onclick', 'removeTrainingRow(this)');
           actionCell.appendChild(removeButton);
         }
       });
@@ -1467,39 +1508,149 @@
       renumberTable(table);
     }
 
+    let storageReady = false;
+    let saveQueue = Promise.resolve();
+    let unsavedChanges = false;
+    let savingCount = 0;
+    let databasePromise;
+
+    function setSaveStatus(message) {
+      document.getElementById('saveStatus').textContent = message;
+    }
+
+    function openDraftDatabase() {
+      if (!databasePromise) databasePromise = new Promise((resolve, reject) => {
+        const request = indexedDB.open('sbm-reportes-borradores', 1);
+        request.onupgradeneeded = () => request.result.createObjectStore('drafts');
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+        request.onblocked = () => reject(new Error('Almacenamiento bloqueado'));
+      });
+      return databasePromise;
+    }
+
+    async function draftOperation(operation, value) {
+      const db = await openDraftDatabase();
+      return new Promise((resolve, reject) => {
+        const transaction = db.transaction('drafts', operation === 'get' ? 'readonly' : 'readwrite');
+        const store = transaction.objectStore('drafts');
+        const request = operation === 'put' ? store.put(value, draftKey)
+          : operation === 'delete' ? store.delete(draftKey) : store.get(draftKey);
+        transaction.oncomplete = () => resolve(request.result);
+        transaction.onerror = () => reject(transaction.error);
+        transaction.onabort = () => reject(transaction.error || new Error('Guardado interrumpido'));
+      });
+    }
+
     function saveDraft() {
+      if (!storageReady) return saveQueue;
+      const snapshot = { html: document.getElementById('report').innerHTML, savedAt: Date.now() };
+      unsavedChanges = true;
+      savingCount += 1;
+      setSaveStatus('Guardando…');
+      saveQueue = saveQueue.catch(() => {}).then(async () => {
+        try {
+          try {
+            await draftOperation('put', snapshot);
+            try { localStorage.removeItem(draftKey); } catch (_) {}
+          } catch (error) {
+            localStorage.setItem(draftKey, JSON.stringify(snapshot));
+          }
+          if (savingCount === 1) {
+            unsavedChanges = false;
+            setSaveStatus('Guardado · ' + new Date(snapshot.savedAt).toLocaleTimeString('es-CR'));
+          }
+        } catch (error) {
+          setSaveStatus('No se pudo guardar. Descarga un respaldo editable antes de cerrar.');
+        } finally {
+          savingCount -= 1;
+        }
+      });
+      return saveQueue;
+    }
+
+    async function readSavedDraft() {
+      let saved;
+      try { saved = await draftOperation('get'); } catch (_) {}
+      let legacy;
       try {
-        localStorage.setItem(draftKey, document.getElementById('report').innerHTML);
-      } catch (error) {
-        console.warn('No se pudo guardar el borrador local.', error);
+        const raw = localStorage.getItem(draftKey);
+        if (raw) {
+          try { legacy = JSON.parse(raw); } catch (_) { legacy = { html: raw, savedAt: 0 }; }
+        }
+      } catch (_) {}
+      if (legacy && legacy.html && (!saved || legacy.savedAt > saved.savedAt)) return legacy.html;
+      return saved && saved.html ? saved.html : null;
+    }
+
+    async function loadDraft(automatic = false) {
+      if (!automatic) {
+        await saveQueue;
+        if (!confirm('¿Recuperar el último borrador guardado y reemplazar el contenido en pantalla?')) return;
+      }
+      const saved = await readSavedDraft();
+      if (saved) {
+        document.getElementById('report').innerHTML = saved;
+        normalizeReport();
+        updatePageNumbers();
+        setSaveStatus('Borrador recuperado');
+      } else if (!automatic) {
+        alert('No hay borrador guardado en este navegador. Puedes abrir tu respaldo editable.');
+      }
+      return Boolean(saved);
+    }
+
+    async function clearDraft() {
+      if (!confirm('¿Borrar el borrador guardado? El reporte en pantalla se conserva.')) return;
+      await saveQueue;
+      let failed = false;
+      try { await draftOperation('delete'); } catch (_) { failed = true; }
+      try { localStorage.removeItem(draftKey); } catch (_) { failed = true; }
+      setSaveStatus(failed ? 'No se pudo borrar todo el almacenamiento.' : 'Borrador eliminado.');
+    }
+
+    function downloadBackup() {
+      // Snapshot directly from the screen, even when browser storage is full.
+      const copy = document.documentElement.cloneNode(true);
+      copy.querySelector('#report').removeAttribute('inert');
+      copy.querySelector('#report').dataset.embeddedBackup = 'true';
+      copy.querySelector('#saveStatus').textContent = 'Respaldo editable abierto';
+      const blob = new Blob(['<!DOCTYPE html>\n', copy.outerHTML], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'Reporte_SBM_Respaldo_' + new Date().toISOString().replace(/[:.]/g, '-') + '.html';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      saveDraft();
+    }
+
+    async function initializeDraft() {
+      const report = document.getElementById('report');
+      report.setAttribute('inert', '');
+      try {
+        if (report.dataset.embeddedBackup === 'true') {
+          setSaveStatus('Respaldo editable abierto');
+        } else {
+          const restored = await loadDraft(true);
+          if (!restored) setSaveStatus('Listo para guardar');
+        }
+        normalizeReport();
+        updatePageNumbers();
+      } finally {
+        storageReady = true;
+        report.removeAttribute('inert');
       }
     }
 
-    function loadDraft() {
-      let saved = null;
-      try {
-        saved = localStorage.getItem(draftKey);
-      } catch (error) {
-        console.warn('No se pudo leer el borrador local.', error);
-      }
-      if (!saved) {
-        alert('No hay borrador guardado para este machote.');
-        return;
-      }
-      document.getElementById('report').innerHTML = saved;
-      normalizeReport();
-      updatePageNumbers();
-    }
-
-    function clearDraft() {
-      if (!confirm('¿Borrar el borrador guardado?')) return;
-      try {
-        localStorage.removeItem(draftKey);
-      } catch (error) {
-        console.warn('No se pudo borrar el borrador local.', error);
-      }
-      alert('Borrador eliminado.');
-    }
+    window.addEventListener('beforeunload', event => {
+      if (unsavedChanges) { event.preventDefault(); event.returnValue = ''; }
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && storageReady) saveDraft();
+    });
 
     document.addEventListener('input', event => {
       if (!event.target.closest('#report')) return;
@@ -1535,11 +1686,11 @@
       prepareTrainingPrintPages,
       cleanupTrainingPrintPages,
       saveDraft,
+      downloadBackup,
       loadDraft,
       clearDraft
     });
-    normalizeReport();
-    updatePageNumbers();
+    initializeDraft();
     const scriptStatus = document.getElementById('scriptStatus');
     if (scriptStatus) scriptStatus.textContent = 'Botones listos';
   </script>
