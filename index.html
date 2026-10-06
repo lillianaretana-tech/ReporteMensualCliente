@@ -665,6 +665,17 @@
       body.print-ready #report { display: none !important; }
       body.print-ready #printReport { display: block; position: static; }
     }
+
+    /* Portada: fotografía centrada y sin leyendas junto a la imagen. */
+    .cover .doc-header,
+    #printReport .doc-header:has(.cover-header-photo) { display: block; }
+    .cover-header-photo .chart-zone {
+      max-width: 125mm;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cover-header-photo .chart-zone img { height: auto; object-fit: contain; }
+    .doc-header .cover-kicker { display: none !important; }
   </style>
 </head>
 <body>
