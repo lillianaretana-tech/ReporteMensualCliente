@@ -653,6 +653,7 @@
     <span class="small-note" id="saveStatus" role="status" aria-live="polite">Recuperando borrador…</span>
     <button onclick="compactPhotoPages()">Reordenar fotos</button>
     <button onclick="addPhotoPage()">Nueva página fotográfica</button>
+    <button class="primary" onclick="newReport()">Nuevo reporte</button>
     <button class="danger" onclick="clearDraft()">Borrar borrador</button>
     <span class="small-note" id="scriptStatus">Cargando botones...</span>
     <span class="small-note">Machote oficial: métricas 4insite, gráficos y detalles. Los ejemplos vacíos no salen en PDF.</span>
@@ -957,6 +958,221 @@
     </section>
   </main>
 
+  <template id="blankReportTemplate">
+    <section class="page cover" data-page-type="cover">
+      <div class="doc-header">
+        <div class="cover-header-photo">
+          <label class="file-button print-hidden">Subir fotografía de portada<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.cover-header-photo').querySelector('.chart-zone'))"></label>
+          <div class="chart-zone" data-placeholder="Fotografía de portada"></div>
+        </div>
+        <div class="cover-kicker">
+          <div>SBM Confidential</div>
+          <div>Monthly Operations Report</div>
+        </div>
+      </div>
+
+      <div class="cover-title">
+        <h1 contenteditable="true" data-placeholder="SBM Monthly Report">SBM Monthly Report</h1>
+        <div class="client-name" contenteditable="true" data-placeholder="Cliente / proyecto"></div>
+        <div class="period" contenteditable="true" data-placeholder="DEL 01 AL 31 DE MES DEL 2026"></div>
+      </div>
+
+      <div class="metrics-row">
+        <div class="metric">
+          <div class="label">Safety</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Días sin accidentes registrables</span>
+        </div>
+        <div class="metric">
+          <div class="label">Auditorías</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Puntuación promedio auditorías internas</span>
+        </div>
+        <div class="metric">
+          <div class="label">Quejas</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Quejas recibidas durante el mes</span>
+        </div>
+        <div class="metric">
+          <div class="label">Felicitaciones</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Felicitaciones recibidas durante el mes</span>
+        </div>
+        <div class="metric">
+          <div class="label">Satisfacción del cliente</div>
+          <span class="value" contenteditable="true" data-placeholder="0">0</span>
+          <span class="note">Puntuación promedio encuesta al cliente</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="page" data-page-type="summary">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Resumen mensual</h2>
+      <p class="intro-line" contenteditable="true" data-placeholder="Detalle de algunas tareas realizadas en el site durante el mes."></p>
+      <ul class="official-list" id="taskList"></ul>
+      <div class="section-actions print-hidden">
+        <button onclick="addListItem('taskList','')">Agregar tarea</button>
+        <button onclick="pasteList('taskList')">Pegar/importar lista</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 2</span></div>
+    </section>
+
+    <section class="page" data-page-type="training">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Capacitaciones del período</h2>
+      <p class="intro-line" contenteditable="true" data-placeholder="Detalle de las capacitaciones impartidas durante el período."></p>
+      <div class="box training-box">
+        <table class="detail-table training-table" id="trainingTable">
+          <thead>
+            <tr><th>#</th><th>Nombre de la capacitación</th><th class="print-hidden">Acción</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td contenteditable="true" data-placeholder="Nombre de la capacitación."></td><td class="print-hidden"><button class="small delete-inline" onclick="removeTrainingRow(this)">Eliminar</button></td></tr>
+          </tbody>
+        </table>
+        <div class="section-actions print-hidden">
+          <button onclick="addTrainingRow('')">Agregar capacitación</button>
+          <button onclick="importTrainings()">Importar de Excel</button>
+        </div>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 3</span></div>
+    </section>
+
+    <section class="page" data-page-type="quality">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Métricas de calidad</h2>
+      <div class="two-col">
+        <div class="box">
+          <h3>Auditorías</h3>
+          <p contenteditable="true" data-placeholder="SBM realizó un total de 0 auditorías internas y 0 auditorías en conjunto durante el mes."></p>
+          <table class="detail-table">
+            <tr><th>Indicador</th><th>Resultado</th></tr>
+            <tr><td>Promedio auditoría interna</td><td contenteditable="true" data-placeholder="0"></td></tr>
+            </table>
+        </div>
+        <div class="box">
+          <h3>Gráfico 4insite - Auditorías</h3>
+          <label class="file-button print-hidden">Subir gráfico<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+          <div class="chart-zone compact quality-chart" data-placeholder="Subir captura o gráfico de auditorías de 4insite"></div>
+        </div>
+      </div>
+      <div class="box" style="margin-top:14px">
+        <h3>Felicitaciones</h3>
+        <p contenteditable="true" data-placeholder="SBM recibió 0 felicitaciones durante el mes."></p>
+        <label class="file-button print-hidden">Subir gráfico 4insite<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+        <div class="chart-zone compact quality-chart" data-placeholder="Gráfico de felicitaciones"></div>
+        <table class="detail-table" id="kudosTable">
+          <tr><th>#</th><th>Detalle</th><th class="print-hidden">Acción</th></tr>
+          <tr><td>1</td><td contenteditable="true" data-placeholder="Detalle de felicitación recibida."></td><td class="print-hidden"><button class="small delete-inline" onclick="removeRow(this)">Eliminar</button></td></tr>
+        </table>
+        <div class="section-actions print-hidden">
+          <button onclick="addDetailRow('kudosTable','Detalle de felicitación recibida.')">Agregar felicitación</button>
+        </div>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 3</span></div>
+    </section>
+
+    <section class="page" data-page-type="complaints">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Quejas</h2>
+      <div class="box">
+        <h3>Quejas</h3>
+        <p contenteditable="true" data-placeholder="SBM recibió un total de 0 quejas durante el mes."></p>
+        <label class="file-button print-hidden">Subir gráfico 4insite<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+        <div class="chart-zone quality-chart" data-placeholder="Gráfico de quejas"></div>
+      </div>
+      <div class="box" style="margin-top:14px">
+        <h3>Detalle de quejas</h3>
+        <table class="detail-table" id="complaintsTable">
+          <tr><th>#</th><th>Detalle</th><th class="print-hidden">Acción</th></tr>
+          <tr><td>1</td><td contenteditable="true" data-placeholder="Si no hubo quejas, dejar vacío."></td><td class="print-hidden"><button class="small delete-inline" onclick="removeRow(this)">Eliminar</button></td></tr>
+        </table>
+        <div class="section-actions print-hidden">
+          <button onclick="addDetailRow('complaintsTable','Detalle de la queja recibida.')">Agregar queja</button>
+        </div>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 4</span></div>
+    </section>
+
+    <section class="page" data-page-type="goodcatch-detail">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Good Catch</h2>
+      <div class="box">
+        <h3>Good Catch</h3>
+        <p contenteditable="true" data-placeholder="SBM recibió un total de 0 reportes de posibles peligros durante el mes."></p>
+        <label class="file-button print-hidden">Subir gráfico 4insite<input type="file" accept="image/*" onchange="loadImage(event,this.closest('.box').querySelector('.chart-zone'))"></label>
+        <div class="chart-zone compact quality-chart" data-placeholder="Gráfico de Good Catch"></div>
+      </div>
+      <p class="intro-line">Detalle de los reportes de posibles peligros registrados durante el mes.</p>
+      <table class="detail-table" id="goodCatchTable">
+        <tr><th>#</th><th>Detalle</th><th>Evidencia</th><th class="print-hidden">Acción</th></tr>
+        <tr>
+          <td>1</td>
+          <td contenteditable="true" data-placeholder="Detalle del posible peligro encontrado."></td>
+          <td>
+            <label class="file-button print-hidden">Subir foto<input type="file" accept="image/*" onchange="loadImage(event,this.closest('td').querySelector('.chart-zone'))"></label>
+            <div class="chart-zone compact" data-placeholder="Foto opcional"></div>
+          </td>
+          <td class="print-hidden"><button class="small delete-inline" onclick="removeRow(this)">Eliminar</button></td>
+        </tr>
+      </table>
+      <div class="section-actions print-hidden">
+        <button onclick="addGoodCatchRow()">Agregar Good Catch</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 5</span></div>
+    </section>
+
+    <section class="page photo-page" data-page-type="photos">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Reporte fotográfico de limpieza</h2>
+      <div class="photo-report" id="photoReport"></div>
+      <div class="section-actions print-hidden">
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
+        <button onclick="addAllPhotoTasksToSummary()">Subir todas al resumen</button>
+        <button onclick="addPhotoPage()">Nueva página fotográfica</button>
+        <button onclick="compactPhotoPages()">Reordenar fotos</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 6</span></div>
+    </section>
+
+    <section class="page" data-page-type="maintenance">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Reporte fotográfico de mantenimiento</h2>
+      <div class="photo-report" id="maintenanceReport"></div>
+      <div class="section-actions print-hidden">
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
+        <button onclick="addAllPhotoTasksToSummary('maintenance')">Subir todas al resumen</button>
+        <button onclick="addPhotoPage('maintenance')">Nueva página fotográfica</button>
+        <button onclick="compactPhotoPages('maintenance')">Reordenar fotos</button>
+        <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 7</span></div>
+    </section>
+
+    <section class="page" data-page-type="events">
+      <div class="doc-header"><div>SBM Reporte Mensual</div><div class="right" contenteditable="true" data-placeholder="Mes / Cliente"></div></div>
+      <h2>Team building / eventos</h2>
+      <p class="intro-line" contenteditable="true" data-placeholder="Detalle de actividades, eventos o team building realizados durante el mes."></p>
+      <div class="photo-report" id="eventsReport"></div>
+      <div class="section-actions print-hidden">
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
+        <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
+      </div>
+      <div class="doc-footer"><span>Confidencial para cliente</span><span>Página 8</span></div>
+    </section>
+
+    <section class="page closing-page" data-page-type="closing">
+      <div class="closing-spacer"></div>
+      <div class="carbon-footer">
+        SBM Confidential
+        <div class="carbon-pill">SBM una empresa declarada Carbono Neutro en sus emisiones de Alcance 1 y 2</div>
+      </div>
+    </section>
+  </template>
   <script>
     const draftKey = 'sbm-oficial-4insite-v1';
 
@@ -1211,7 +1427,12 @@
       caption.contentEditable = 'true';
       caption.dataset.placeholder = labelText;
       caption.textContent = labelText;
-      wrapper.append(label, zone, caption);
+      const removePhotoButton = document.createElement('button');
+      removePhotoButton.type = 'button';
+      removePhotoButton.className = 'small delete-inline print-hidden';
+      removePhotoButton.textContent = 'Quitar foto';
+      removePhotoButton.setAttribute('onclick', 'removePhoto(this)');
+      wrapper.append(label, zone, caption, removePhotoButton);
       return wrapper;
     }
 
@@ -1232,11 +1453,21 @@
       saveDraft();
     }
 
+    function removePhoto(button) {
+      const slot = button.closest('div');
+      const zone = slot && slot.querySelector('.photo-zone');
+      if (!zone) return;
+      zone.replaceChildren();
+      const input = slot.querySelector('input[type="file"]');
+      if (input) input.value = '';
+      saveDraft();
+    }
+
     function removeWorkCard(button) {
       const card = button.closest('.work-card');
-      const report = card.closest('.photo-report');
+      if (!card) return;
       card.remove();
-      if (!report.querySelector('.work-card')) addWorkCard(report);
+      updatePageNumbers();
       saveDraft();
     }
 
@@ -1410,6 +1641,31 @@
 
     function normalizeReport() {
       document.querySelectorAll('.work-card').forEach(card => {
+        let actions = card.querySelector('.section-actions');
+        if (!actions) {
+          actions = document.createElement('div');
+          actions.className = 'section-actions print-hidden';
+          card.appendChild(actions);
+        }
+        if (!Array.from(actions.querySelectorAll('button')).some(button => button.textContent.trim() === 'Eliminar evidencia')) {
+          const removeButton = document.createElement('button');
+          removeButton.type = 'button';
+          removeButton.className = 'small delete-inline';
+          removeButton.textContent = 'Eliminar evidencia';
+          removeButton.setAttribute('onclick', 'removeWorkCard(this)');
+          actions.appendChild(removeButton);
+        }
+        card.querySelectorAll('.photo-zone').forEach(zone => {
+          const slot = zone.parentElement;
+          if (!Array.from(slot.querySelectorAll('button')).some(button => button.textContent.trim() === 'Quitar foto')) {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'small delete-inline print-hidden';
+            button.textContent = 'Quitar foto';
+            button.setAttribute('onclick', 'removePhoto(this)');
+            slot.appendChild(button);
+          }
+        });
         card.querySelectorAll('input[type="file"]').forEach(input => input.setAttribute('onchange', "loadImage(event,this.closest('div').querySelector('.photo-zone'))"));
         card.querySelectorAll('button').forEach(button => {
           if (button.textContent.trim() === 'Subir al resumen') button.setAttribute('onclick', 'addTaskFromCard(this)');
@@ -1627,6 +1883,27 @@
       saveDraft();
     }
 
+    async function newReport() {
+      if (!storageReady) return;
+      if (!confirm('¿Iniciar un reporte vacío? Se descargará primero un respaldo editable del reporte actual.')) return;
+      downloadBackup();
+      storageReady = false;
+      const report = document.getElementById('report');
+      report.setAttribute('inert', '');
+      try {
+        await saveQueue;
+        report.innerHTML = document.getElementById('blankReportTemplate').innerHTML;
+        delete report.dataset.embeddedBackup;
+        normalizeReport();
+        updatePageNumbers();
+      } finally {
+        storageReady = true;
+        report.removeAttribute('inert');
+      }
+      await saveDraft();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
     async function initializeDraft() {
       const report = document.getElementById('report');
       report.setAttribute('inert', '');
@@ -1677,6 +1954,8 @@
       addWorkCard,
       addPhotoPage,
       removeWorkCard,
+      removePhoto,
+      newReport,
       removeSection,
       addTaskFromCard,
       addAllPhotoTasksToSummary,
