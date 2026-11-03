@@ -517,7 +517,7 @@
 
     .photo-pair {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(var(--photo-columns, 3), minmax(0, 1fr));
       gap: 10px;
     }
 
@@ -909,7 +909,7 @@
         </article>
       </div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / proceso / después</button>
         <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button onclick="addAllPhotoTasksToSummary()">Subir todas al resumen</button>
         <button onclick="addPhotoPage()">Nueva página fotográfica</button>
@@ -943,7 +943,7 @@
         </article>
       </div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / proceso / después</button>
         <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button onclick="addAllPhotoTasksToSummary('maintenance')">Subir todas al resumen</button>
         <button onclick="addPhotoPage('maintenance')">Nueva página fotográfica</button>
@@ -978,7 +978,7 @@
         </article>
       </div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / proceso / después</button>
         <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
       </div>
@@ -1164,7 +1164,7 @@
       <h2>Reporte fotográfico de limpieza</h2>
       <div class="photo-report" id="photoReport"></div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / proceso / después</button>
         <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button onclick="addAllPhotoTasksToSummary()">Subir todas al resumen</button>
         <button onclick="addPhotoPage()">Nueva página fotográfica</button>
@@ -1178,7 +1178,7 @@
       <h2>Reporte fotográfico de mantenimiento</h2>
       <div class="photo-report" id="maintenanceReport"></div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / proceso / después</button>
         <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button onclick="addAllPhotoTasksToSummary('maintenance')">Subir todas al resumen</button>
         <button onclick="addPhotoPage('maintenance')">Nueva página fotográfica</button>
@@ -1194,7 +1194,7 @@
       <p class="intro-line" contenteditable="true" data-placeholder="Detalle de actividades, eventos o team building realizados durante el mes."></p>
       <div class="photo-report" id="eventsReport"></div>
       <div class="section-actions print-hidden">
-        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / después</button>
+        <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'))">Agregar antes / proceso / después</button>
         <button onclick="addWorkCard(this.closest('.page').querySelector('.photo-report'), 'individual')">Agregar foto individual / proceso</button>
         <button class="danger" onclick="removeSection(this)">Eliminar sección</button>
       </div>
@@ -1221,7 +1221,7 @@
     async function logoutEvidencePicker(){await evidenceClient().auth.signOut();await evidenceIdentity()}
     async function evidenceIdentity(){try{const db=evidenceClient();const {data:{user}}=await db.auth.getUser();document.getElementById('evidenceLogin').style.display=user?'none':'block';document.getElementById('evidenceFilters').style.display=user?'block':'none';if(!user){evidenceMsg('');return}const [m,s,p]=await Promise.all([db.from('sbm_portal_members').select('is_admin,active').eq('user_id',user.id).maybeSingle(),db.from('sbm_evidence_supervisors').select('project_id').eq('user_id',user.id),db.from('sbm_portal_projects').select('id,name').order('name')]);if(m.error||s.error||p.error)throw m.error||s.error||p.error;const admin=!!(m.data?.is_admin&&m.data?.active);evidenceAllowedProjects=(p.data||[]).filter(x=>admin||(s.data||[]).some(a=>a.project_id===x.id));if(!evidenceAllowedProjects.length){document.getElementById('evidenceFilters').style.display='none';evidenceMsg('Esta cuenta no tiene permisos para elaborar reportes mensuales.');return}document.getElementById('evidenceProject').replaceChildren(...evidenceAllowedProjects.map(p=>{const o=document.createElement('option');o.value=p.id;o.textContent=p.name;return o}));evidenceMsg('Elegí el proyecto y el mes para consultar las fotografías.')}catch(e){evidenceMsg('Error de acceso: '+e.message)}}
     async function loadApprovedEvidence(){try{const db=evidenceClient(),pid=document.getElementById('evidenceProject').value,month=document.getElementById('evidenceMonth').value;if(!evidenceAllowedProjects.some(p=>p.id===pid)||!/^\d{4}-\d{2}$/.test(month))throw Error('Seleccioná proyecto y mes válidos.');const from=month+'-01T00:00:00',to=new Date(Date.UTC(Number(month.slice(0,4)),Number(month.slice(5,7)),1)).toISOString();const {data,error}=await db.from('sbm_evidence_reports').select('id,area,description,occurred_at,person_id').eq('project_id',pid).eq('status','aprobado').eq('include_monthly',true).gte('occurred_at',from).lt('occurred_at',to).order('occurred_at',{ascending:false});if(error)throw error;evidenceRows=data||[];const list=document.getElementById('evidenceItems');list.replaceChildren();for(const r of evidenceRows){const div=document.createElement('div');div.style.cssText='border:1px solid #ddd;border-radius:8px;padding:12px;margin:8px 0';const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.className='evidence-check';checkbox.value=r.id;checkbox.checked=true;const title=document.createElement('span');title.textContent=' '+(r.area||'Sin área')+' · '+new Date(r.occurred_at).toLocaleDateString('es-CR')+' · '+(r.description||'');div.append(checkbox,title);list.append(div)}evidenceMsg(evidenceRows.length+' evidencias disponibles.')}catch(e){evidenceMsg('No se pudo consultar: '+e.message)}}
-    async function importSelectedEvidence(){const selected=new Set([...document.querySelectorAll('.evidence-check:checked')].map(x=>x.value));if(!selected.size){evidenceMsg('Seleccioná al menos una evidencia.');return}const db=evidenceClient(),target=document.getElementById('photoReport')||document.getElementById('maintenanceReport');if(!target){evidenceMsg('No se encontró la sección fotográfica.');return}let count=0;try{for(const item of evidenceRows.filter(r=>selected.has(r.id))){const {data:photos,error}=await db.from('sbm_evidence_photos').select('stage,storage_path').eq('report_id',item.id);if(error)throw error;const loaded=[];for(const photo of photos||[]){const {data:signed,error:signError}=await db.storage.from('sbm-evidencia-operativa').createSignedUrl(photo.storage_path,120);if(signError)throw signError;const response=await fetch(signed.signedUrl);if(!response.ok)throw Error('No se pudo cargar una fotografía.');const blob=await response.blob();const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)});loaded.push({stage:photo.stage,url:dataUrl})}if(!loaded.length)continue;const card=addWorkCard(target,loaded.length===1?'individual':'pair');const created=card||target.lastElementChild;created.querySelector('.work-title').textContent=[item.area,item.description].filter(Boolean).join(' · ');const zones=created.querySelectorAll('.photo-zone');for(let i=0;i<Math.min(zones.length,loaded.length);i++){const img=document.createElement('img');img.src=loaded[i].url;zones[i].replaceChildren(img);const label=zones[i].parentElement.querySelector('.photo-label');if(label)label.textContent=({antes:'Antes',proceso:'Proceso',despues:'Después'})[loaded[i].stage]||loaded[i].stage}count++}saveDraft();evidenceMsg(count+' evidencias incorporadas. Ya podés cerrar esta ventana.')}catch(e){saveDraft();evidenceMsg('Se incorporaron '+count+'. Error: '+e.message)}}
+    async function importSelectedEvidence(){const selected=new Set([...document.querySelectorAll('.evidence-check:checked')].map(x=>x.value));if(!selected.size){evidenceMsg('Seleccioná al menos una evidencia.');return}const db=evidenceClient(),target=document.getElementById('photoReport')||document.getElementById('maintenanceReport');if(!target){evidenceMsg('No se encontró la sección fotográfica.');return}let count=0;try{for(const item of evidenceRows.filter(r=>selected.has(r.id))){const {data:photos,error}=await db.from('sbm_evidence_photos').select('stage,storage_path').eq('report_id',item.id);if(error)throw error;const loaded=[];for(const photo of photos||[]){const {data:signed,error:signError}=await db.storage.from('sbm-evidencia-operativa').createSignedUrl(photo.storage_path,120);if(signError)throw signError;const response=await fetch(signed.signedUrl);if(!response.ok)throw Error('No se pudo cargar una fotografía.');const blob=await response.blob();const dataUrl=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)});loaded.push({stage:photo.stage,url:dataUrl})}if(!loaded.length)continue;if(loaded.some(p=>!['antes','proceso','despues'].includes(p.stage))||new Set(loaded.map(p=>p.stage)).size!==loaded.length)throw Error('La evidencia contiene etapas duplicadas o no reconocidas.');const created=addWorkCard(target,'triple');created.dataset.evidenceId=item.id;created.querySelector('.work-title').textContent=[item.area,item.description].filter(Boolean).join(' · ');for(const photo of loaded){const slot=[...created.querySelector('.photo-pair').children].find(slot=>slot.dataset.stage===photo.stage);if(!slot)throw Error('Etapa de foto no reconocida: '+photo.stage);const img=document.createElement('img');img.src=photo.url;slot.querySelector('.photo-zone').replaceChildren(img)}updateStageLayout(created);count++}saveDraft();evidenceMsg(count+' evidencias incorporadas. Ya podés cerrar esta ventana.')}catch(e){saveDraft();evidenceMsg('Se incorporaron '+count+'. Error: '+e.message)}}
 
     const draftKey = 'sbm-oficial-4insite-v1';
 
@@ -1423,7 +1423,7 @@
       });
     }
 
-    function addWorkCard(container, mode = 'pair') {
+    function addWorkCard(container, mode = 'triple') {
       const card = document.createElement('article');
       card.className = 'work-card';
       const title = document.createElement('p');
@@ -1439,7 +1439,8 @@
         pair.classList.add('photo-individual');
         pair.appendChild(createPhotoSlot('Fotografía del proceso', 'Proceso'));
       } else {
-        pair.appendChild(createPhotoSlot('Antes / Proceso', 'Antes'));
+        pair.appendChild(createPhotoSlot('Antes', 'Antes'));
+        pair.appendChild(createPhotoSlot('Proceso', 'Proceso'));
         pair.appendChild(createPhotoSlot('Después', 'Después'));
       }
       actions.className = 'section-actions print-hidden';
@@ -1454,8 +1455,66 @@
       actions.append(summaryButton, removeButton);
       card.append(title, pair, actions);
       container.appendChild(card);
+      enhanceStageCard(card);
       card.querySelector('.work-title').focus();
       saveDraft();
+      return card;
+    }
+
+
+    const REPORT_STAGES = ['antes', 'proceso', 'despues'];
+    const REPORT_STAGE_LABELS = {antes:'Antes', proceso:'Proceso', despues:'Después'};
+    function updateStageLayout(card) {
+      const pair=card.querySelector('.photo-pair');
+      if(!pair)return;
+      const count=pair.children.length;
+      pair.style.setProperty('--photo-columns',String(Math.max(1,Math.min(3,count))));
+      pair.classList.toggle('photo-individual',count===1);
+    }
+    function enhanceStageCard(card) {
+      const pair=card.querySelector('.photo-pair');if(!pair)return;
+      const initialized=card.dataset.stagesReady==='true';
+      [...pair.children].forEach((slot,index)=>{
+        if(!slot.querySelector('.photo-zone'))return;
+        if(!slot.dataset.stage){
+          const label=(slot.querySelector('.photo-label')?.textContent||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+          slot.dataset.stage=label.includes('despues')?'despues':label.includes('proceso')&&!label.includes('antes')?'proceso':label.includes('antes')?'antes':REPORT_STAGES[index]||'proceso';
+        }
+        if(!slot.querySelector('[data-remove-stage]')){
+          const button=document.createElement('button');button.type='button';button.className='small delete-inline print-hidden';button.dataset.removeStage='true';button.textContent='Eliminar espacio vacío';button.setAttribute('onclick','removeEmptyPhotoSlot(this)');slot.appendChild(button);
+        }
+      });
+      if(!initialized && !pair.classList.contains('photo-individual')){
+        REPORT_STAGES.forEach(stage=>{if(![...pair.children].some(slot=>slot.dataset.stage===stage)){
+          const slot=createPhotoSlot(REPORT_STAGE_LABELS[stage],REPORT_STAGE_LABELS[stage]);slot.dataset.stage=stage;pair.appendChild(slot);
+        }});
+        [...pair.children].sort((a,b)=>REPORT_STAGES.indexOf(a.dataset.stage)-REPORT_STAGES.indexOf(b.dataset.stage)).forEach(slot=>pair.appendChild(slot));
+      }
+      card.dataset.stagesReady='true';
+      // Add controls for newly created missing stages without changing existing captions or photos.
+      [...pair.children].forEach(slot=>{if(!slot.querySelector('[data-remove-stage]')){
+        const b=document.createElement('button');b.type='button';b.className='small delete-inline print-hidden';b.dataset.removeStage='true';b.textContent='Eliminar espacio vacío';b.setAttribute('onclick','removeEmptyPhotoSlot(this)');slot.appendChild(b);
+      }});
+      const actions=card.querySelector('.section-actions');
+      if(actions&&!actions.querySelector('[data-restore-stages]')){
+        const button=document.createElement('button');button.type='button';button.className='small';button.dataset.restoreStages='true';button.textContent='Restaurar espacios de etapas';button.setAttribute('onclick','restorePhotoStages(this)');actions.appendChild(button);
+      }
+      updateStageLayout(card);
+    }
+    function removeEmptyPhotoSlot(button) {
+      const slot=button.parentElement,card=button.closest('.work-card');
+      if(slot.querySelector('.photo-zone img')){alert('Este espacio contiene una foto. Para conservarla, no se eliminó el espacio.');return;}
+      const pair=slot.parentElement;
+      if(pair.children.length===1){alert('Conservá al menos un espacio o eliminá la evidencia completa.');return;}
+      slot.remove();updateStageLayout(card);saveDraft();
+    }
+    function restorePhotoStages(button) {
+      const card=button.closest('.work-card'),pair=card.querySelector('.photo-pair');
+      REPORT_STAGES.forEach(stage=>{if(![...pair.children].some(slot=>slot.dataset.stage===stage)){
+        const slot=createPhotoSlot(REPORT_STAGE_LABELS[stage],REPORT_STAGE_LABELS[stage]);slot.dataset.stage=stage;pair.appendChild(slot);
+      }});
+      [...pair.children].sort((a,b)=>REPORT_STAGES.indexOf(a.dataset.stage)-REPORT_STAGES.indexOf(b.dataset.stage)).forEach(slot=>pair.appendChild(slot));
+      enhanceStageCard(card);saveDraft();
     }
 
     function createPhotoSlot(zoneText, labelText) {
@@ -1832,7 +1891,7 @@
         if (!actions || !actions.classList.contains('section-actions')) return;
         const existing = Array.from(actions.querySelectorAll('button')).find(button => (button.getAttribute('onclick') || '').startsWith('addWorkCard('));
         if (existing) {
-          existing.textContent = 'Agregar antes / después';
+          existing.textContent = 'Agregar antes / proceso / después';
           existing.setAttribute('onclick', "addWorkCard(this.closest('.page').querySelector('.photo-report'))");
         }
         if (!actions.querySelector('[data-add-individual]') && !actions.textContent.includes('Agregar foto individual')) {
@@ -1844,6 +1903,7 @@
           if (existing) existing.after(button); else actions.prepend(button);
         }
       });
+      document.querySelectorAll('.work-card').forEach(enhanceStageCard);
       normalizeCoverHeader();
       normalizeTaskList();
       normalizeTrainingTable();
@@ -2108,6 +2168,8 @@
       addPhotoPage,
       removeWorkCard,
       removePhoto,
+      removeEmptyPhotoSlot,
+      restorePhotoStages,
       newReport,
       removeSection,
       addTaskFromCard,
